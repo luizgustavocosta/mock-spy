@@ -8,7 +8,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @DisplayName("What is the difference between Mock and Spy?")
 class ToyServiceTest {
@@ -20,13 +22,9 @@ class ToyServiceTest {
     @DisplayName("Save using Mock")
     void saveUsingMock() {
         ToyService service = Mockito.mock(ToyService.class);
-        Toy toy = Toy.builder()
-                .commercialName(COMMERCIAL_NAME).build();
+        Toy toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
 
-        when(service.save(toy))
-                .thenReturn(Toy.builder()
-                        .id(ID)
-                        .build());
+        when(service.save(toy)).thenReturn(Toy.builder().id(ID).build());
 
         Toy storedToy = service.save(toy);
 
@@ -40,14 +38,12 @@ class ToyServiceTest {
         ToyJpa repository = Mockito.mock(ToyJpa.class);
         ToyValidator validator = Mockito.spy(ToyValidator.class);
 
-        when(repository.save(any(Toy.class)))
-                .thenReturn(Toy.builder()
-                                .id(ID)
-                                .commercialName(COMMERCIAL_NAME)
-                        .build());
+        Toy toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
+        Toy newToy = Toy.builder().id(ID).commercialName(COMMERCIAL_NAME).build();
+
+        Mockito.doReturn(newToy).when(repository).save(toy);
 
         ToyService service = Mockito.spy(new ToyService(validator, repository));
-        Toy toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
 
         Toy storedToy = service.save(toy);
 
@@ -57,7 +53,7 @@ class ToyServiceTest {
 
         assertAll("Fine validation",
                 () -> assertEquals(ID, storedToy.getId()),
-                () -> assertEquals("11", equalTo(storedToy.getId())),
+                () -> assertEquals("11", storedToy.getId()),
                 () -> assertEquals(COMMERCIAL_NAME, storedToy.getCommercialName()));
     }
 }
