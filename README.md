@@ -11,9 +11,14 @@ The intent of this project is demonstrate the use of Mock and Spy.
 mvn clean test
 ```
 
+### Run the JaCoCo
+```bash
+mvn jacoco:report
+```
+
 ## Class diagram
 <kbd>
-![](./static/ClassDiagram.png)  
+ <img src="https://raw.githubusercontent.com/mock-spy/blob/master/static/ClassDiagram.png">
 </kbd>
 
 ## Stack
