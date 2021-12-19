@@ -1,5 +1,6 @@
 package com.costa.luiz.mockandspy.domain;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,14 +23,17 @@ class ToyServiceTest {
     @DisplayName("Save using Mock")
     void saveUsingMock() {
         ToyService service = Mockito.mock(ToyService.class);
-        Toy toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
+        var toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
 
-        when(service.save(toy)).thenReturn(Toy.builder().id(ID).build());
+        when(service.save(toy)).thenReturn(Toy.builder().id(ID).commercialName(COMMERCIAL_NAME).build());
 
-        Toy storedToy = service.save(toy);
+        var storedToy = service.save(toy);
 
         verify(service, atLeastOnce()).save(toy);
-        assertThat(ID, equalTo(storedToy.getId()));
+        assertAll(() ->{
+            assertThat(ID, equalTo(storedToy.getId()));
+            assertEquals(COMMERCIAL_NAME, storedToy.getCommercialName());
+        });
     }
 
     @Test
@@ -38,14 +42,14 @@ class ToyServiceTest {
         ToyJpa repository = Mockito.mock(ToyJpa.class);
         ToyValidator validator = Mockito.spy(ToyValidator.class);
 
-        Toy toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
-        Toy newToy = Toy.builder().id(ID).commercialName(COMMERCIAL_NAME).build();
+        var toy = Toy.builder().commercialName(COMMERCIAL_NAME).build();
+        var newToy = Toy.builder().id(ID).commercialName(COMMERCIAL_NAME).build();
 
         Mockito.doReturn(newToy).when(repository).save(toy);
 
-        ToyService service = Mockito.spy(new ToyService(validator, repository));
+        var service = Mockito.spy(new ToyService(validator, repository));
 
-        Toy storedToy = service.save(toy);
+        var storedToy = service.save(toy);
 
         verify(service, atLeastOnce()).save(toy);
         verify(validator, atLeastOnce()).validateName(COMMERCIAL_NAME);
@@ -53,7 +57,23 @@ class ToyServiceTest {
 
         assertAll("Fine validation",
                 () -> assertEquals(ID, storedToy.getId()),
-                () -> assertEquals("11", storedToy.getId()),
+                //() -> assertEquals("11", storedToy.getId()),
                 () -> assertEquals(COMMERCIAL_NAME, storedToy.getCommercialName()));
+    }
+
+    @Test
+    @DisplayName("Delete using Mock")
+    void deleteUsingMock() {
+        var service = Mockito.mock(ToyService.class);
+        Assertions.assertDoesNotThrow(() -> service.delete(ID));
+        verify(service, atLeastOnce()).delete(ID); //Not good assertion
+    }
+
+    @Test
+    @DisplayName("Delete using Spy")
+    void deleteUsingSpy() {
+        var service = Mockito.spy(new ToyService(Mockito.mock(ToyValidator.class), Mockito.mock(ToyJpa.class)));
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> service.delete(ID));
+        verify(service, atLeastOnce()).delete(ID);
     }
 }

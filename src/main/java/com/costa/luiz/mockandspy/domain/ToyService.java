@@ -2,7 +2,12 @@ package com.costa.luiz.mockandspy.domain;
 
 import lombok.RequiredArgsConstructor;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -26,6 +31,10 @@ public class ToyService {
                                 LocalDate.of(1995, Month.NOVEMBER, 19),
                                 LocalTime.of(19, 0, 0)), ZoneId.of("Americas/Sao_Paulo")))
                 .build());
+    }
+
+    public void delete(String id) {
+        throw new UnsupportedOperationException();
     }
 
 }
