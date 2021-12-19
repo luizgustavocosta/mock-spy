@@ -18,7 +18,7 @@ mvn jacoco:report
 
 ## Class diagram
 <kbd>
- <img src="https://raw.githubusercontent.com/mock-spy/blob/master/static/ClassDiagram.png">
+ <img src="https://raw.githubusercontent.com/luizgustavocosta/mock-spy/master/static/ClassDiagram.png">
 </kbd>
 
 ## Stack
